@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
+import java.util.Random;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -59,6 +60,8 @@ public class Main {
             });
             detailsButton.addActionListener(e -> afficherDetails());
 
+            detailsButton.setBackground(customGray);
+            detailsButton.setForeground(Color.WHITE);
             // Create a custom JPanel for displaying the background image
             JPanel backgroundPanel = new JPanel() {
                 @Override
@@ -151,7 +154,7 @@ public class Main {
 
     private static void choisirDifficulte() {
         // Utilisez une boîte de dialogue pour permettre à l'utilisateur de choisir la difficulté
-        Object[] options = {"Facile", "Moyen", "Difficile"};
+        Object[] options = {"Facile", "Moyenne", "Difficile"};
         int choix = JOptionPane.showOptionDialog(null,
                 "Choisissez la difficulté :",
                 "Difficulté",
@@ -166,7 +169,7 @@ public class Main {
                 selectedDifficulty = "Facile";
                 break;
             case 1:
-                selectedDifficulty = "Moyen";
+                selectedDifficulty = "Moyenne";
                 break;
             case 2:
                 selectedDifficulty = "Difficile";
@@ -258,10 +261,13 @@ public class Main {
                 JButton voirArbreButton = new JButton("Voir Arbre");
                 JButton ajouterMotButton = new JButton("Ajouter Mot");
                 JButton supprimerMotButton = new JButton("Supprimer Mot");
+                JButton rechercherMotButton = new JButton("Rechercher Mot");
+                
 
                 voirArbreButton.addActionListener(e -> afficherArbre());
                 ajouterMotButton.addActionListener(e -> ajouterMot());
                 supprimerMotButton.addActionListener(e -> supprimerMot());
+                rechercherMotButton.addActionListener(e -> rechercherMot());
 
                 JPanel detailsPanel = new JPanel();
                 detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
@@ -282,6 +288,10 @@ public class Main {
                 JPanel supprimerMotPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 supprimerMotPanel.add(supprimerMotButton);
                 detailsPanel.add(supprimerMotPanel);
+                
+                JPanel rechercherMotPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                rechercherMotPanel.add(rechercherMotButton);
+                detailsPanel.add(rechercherMotPanel);
 
                 detailsFrame.getContentPane().add(detailsPanel);
                 detailsFrame.setSize(300, 200);
@@ -310,6 +320,27 @@ public class Main {
         } else {
             // Display a message if the input is null or empty
             JOptionPane.showMessageDialog(null, "Invalid word. Please enter a valid word.");
+        }
+    }
+    public static String MotAleatoire(int longueurMin, int longueurMax) {
+        // Lire les mots depuis le fichier de dictionnaire
+        List<String> mots = lireMotsDepuisFichier(cheminFichier);
+
+        // Filtrer les mots selon la longueur
+        List<String> motsFiltres = new ArrayList<>();
+        for (String mot : mots) {
+            if (mot.length() >= longueurMin && mot.length() <= longueurMax) {
+                motsFiltres.add(mot);
+            }
+        }
+
+        // Choisir aléatoirement un mot parmi les mots filtrés
+        if (!motsFiltres.isEmpty()) {
+            Random random = new Random();
+            int index = random.nextInt(motsFiltres.size());
+            return motsFiltres.get(index);
+        } else {
+            return ""; // Aucun mot trouvé dans la plage de longueurs spécifiée
         }
     }
 
@@ -355,6 +386,27 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Selected words have been deleted.");
         }
     }
+ // Method to handle the rechercheMotButton action
+    private static void rechercherMot() {
+        // Prompt the user to enter the word to search
+        String wordToSearch = JOptionPane.showInputDialog(null, "Enter the word to search:");
+
+        // Check if the word is null or empty
+        if (wordToSearch != null && !wordToSearch.isEmpty()) {
+            // Call the method to search for the word in the tree
+            boolean wordExists = arbre.rechercherMot(wordToSearch); 
+
+            // Display the result
+            if (wordExists) {
+                JOptionPane.showMessageDialog(null, "The word \"" + wordToSearch + "\" exists in the tree.");
+            } else {
+                JOptionPane.showMessageDialog(null, "The word \"" + wordToSearch + "\" does not exist in the tree.");
+            }
+        } else {
+            // If the word entered is null or empty, display a message
+            JOptionPane.showMessageDialog(null, "Please enter a valid word.");
+        }
+    }
 
     private static List<String> lireMotsDepuisFichier(String cheminFichier) {
         List<String> words = new ArrayList<>();
@@ -388,16 +440,7 @@ public class Main {
         }
     }
     
-    private static class TextBorder extends AbstractBorder {
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setColor(Color.WHITE);  // Couleur du contour
-            g2d.setStroke(new BasicStroke(3));  // Largeur du contour
-            g2d.drawRoundRect(x, y, width - 1, height - 1, 10, 10);  // Rectangle arrondi pour un contour plus doux
-            g2d.dispose();
-        }
-    }
+  
 	   
 	    
 }

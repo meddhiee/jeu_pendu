@@ -147,7 +147,16 @@ public class ArbrePanel extends JPanel {
             	soundPlayer.loadSound("C:\\Users\\meddh\\eclipse-workspace\\Jeu_du_pendu\\sons\\applaudi.wav");
                 soundPlayer.playSound();
                 incrementScore();
-                resetJeu(Main.selectedDifficulty);
+                Timer timer = new Timer(10000, new ActionListener() {
+                	@Override
+            		public void actionPerformed(ActionEvent e) {
+                		resetJeu(Main.selectedDifficulty);
+            			
+            		}
+                
+                });
+                timer.setRepeats(false); // N'exécutez le Timer qu'une seule fois
+                timer.start();
                 
             
             }else {
@@ -190,7 +199,7 @@ public class ArbrePanel extends JPanel {
                 minLongueurMot = 2;
                 maxLongueurMot = 4;
                 break;
-            case "Moyen":
+            case "Moyenne":
                 erreursMax = 4;
                 minLongueurMot = 5;
                 maxLongueurMot = 8;
@@ -212,11 +221,7 @@ public class ArbrePanel extends JPanel {
             setMotDevine(afficherMotDevine(motADeviner, new ArrayList<>(), Main.selectedDifficulty));
         }
 
-        try {
-            jouerPendu();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        
     }
 
     private void resetJeu(String difficulty) {
@@ -228,7 +233,7 @@ public class ArbrePanel extends JPanel {
 		        minLongueurMot = 2;
 		        maxLongueurMot = 4;
 		        break;
-		    case "Moyen":
+		    case "Moyenne":
 		        minLongueurMot = 5;
 		        maxLongueurMot = 8;
 		        break;
@@ -238,7 +243,7 @@ public class ArbrePanel extends JPanel {
 		        break;
 		    default:
 		        // Gérez une valeur inattendue (peut-être affichez un message d'erreur)
-		        minLongueurMot = 4; // Valeur par défaut
+		        minLongueurMot = 4; 
 		        maxLongueurMot = 6;
 		}
 		
@@ -256,8 +261,9 @@ public class ArbrePanel extends JPanel {
 		textField.setEnabled(true);
 		validerButton.setEnabled(true);
 
-		// Repaint the panel
-		repaint();
+			repaint();
+			
+		
     }
 
 
@@ -290,7 +296,7 @@ public class ArbrePanel extends JPanel {
         repaint();
 
         // Optionnel : Utilisez un Timer pour effacer automatiquement le message après quelques secondes
-        Timer timer = new Timer(5000, new ActionListener() {
+        Timer timer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 errorLabel.setText(""); // Effacez le texte du label d'erreur
@@ -303,7 +309,13 @@ public class ArbrePanel extends JPanel {
     }
 
     private String choisirMotAleatoireAvecLongueur(int minLongueur, int maxLongueur, ArbreBinaire arbre) {
-        String motAleatoire = arbre.MotAleatoire(minLongueur, maxLongueur, arbre.getRacine(), "");
+        String motAleatoire = null;
+		try {
+			motAleatoire = Main.MotAleatoire(minLongueur, maxLongueur);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         motAleatoire = motAleatoire.toLowerCase();
         if (motAleatoire.isEmpty()) {
             // Gérer le cas où aucun mot ne correspond à la longueur spécifiée
@@ -321,7 +333,13 @@ public class ArbrePanel extends JPanel {
 
     // Ajoutez une méthode pour obtenir la lettre saisie dans le champ de texte
     public char getLettreProposee() {
-        return textField.getText().toLowerCase().charAt(0);
+    	String text = textField.getText().toLowerCase();
+        if (!text.isEmpty()) {
+            return text.charAt(0);
+        } else {
+            
+            return ' '; 
+        }
     }
     
     // Stocker la lettre à la position aléatoire
@@ -346,7 +364,7 @@ public class ArbrePanel extends JPanel {
              case "Facile":
                  nombreLettresAleatoires = 1;
                  break;
-             case "Moyen":
+             case "Moyenne":
                  nombreLettresAleatoires = 2;
                  break;
              case "Difficile":

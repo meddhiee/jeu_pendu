@@ -57,56 +57,24 @@ public class ArbreBinaire {
 	    return root;
 	}
 
-	public int NombreFils(Noeud racine, int nombre, Direction direction) {
-        if (racine == null) {
-            return (direction == Direction.GAUCHE) ? -1 : nombre;
-        } else if (direction == Direction.DROIT) {
-            return NombreFils(racine.filsDroit, nombre + 1, direction);
-        } else if (racine.caractere == '\0') {
-            return nombre;
-        } else {
-            return NombreFils(racine.filsGauche, nombre + 1, direction);
-        }
+ // Méthode pour rechercher un mot dans l'arbre en utilisant la racine de l'arbre
+    public boolean rechercherMot(String word) {
+    	
+        return RechercherMot(racine, word, 0);
     }
-
-    public enum Direction {
-        GAUCHE,
-        DROIT
-    }
-    
-    public Noeud NoeudAleatoire(Noeud noeud, int longueurMin, int longueurMax, String motFinal, Direction direction) {
-        int indiceAleatoire = NombreFils(noeud, 0, Direction.DROIT);
-        List<Noeud> noeudsCompatibles = new ArrayList<>();
-        Noeud p = noeud;
-
-        while (indiceAleatoire > 0) {
-            int longueurAttendue = NombreFils(p, 0, Direction.GAUCHE) + motFinal.length();
-            if (longueurAttendue >= longueurMin && longueurAttendue <= longueurMax) {
-                noeudsCompatibles.add(p);
-            }
-            p = p.filsDroit;
-            indiceAleatoire--;
-        }
-
-        if (!noeudsCompatibles.isEmpty()) {
-            return noeudsCompatibles.get(new Random().nextInt(noeudsCompatibles.size()));
-        } else {
-            return null;
-        }
-    }
-    public String MotAleatoire(int longueurMin, int longueurMax, Noeud racine, String motFinal) {
-        if (racine == null) {
-            return motFinal;
-        } else if (racine.caractere == '\0') {
-            return motFinal;
-        } else {
-        	Noeud noeudAleatoire = NoeudAleatoire(racine, longueurMin, longueurMax, motFinal, Direction.GAUCHE);
-            if (noeudAleatoire != null) {
-                motFinal += noeudAleatoire.caractere;
-                return MotAleatoire(longueurMin, longueurMax, noeudAleatoire.filsGauche, motFinal);
+    public boolean RechercherMot(Noeud root, String word, int pos) {
+        if (root == null) {
+            return false;
+        } else if (pos == word.length()) {
+            if (root.caractere == '\0') {
+                return true;
             } else {
-                return "";
+                return false;
             }
+        } else if (word.charAt(pos) == root.caractere) {
+            return RechercherMot(root.filsGauche, word, pos + 1);
+        } else {
+            return RechercherMot(root.filsDroit, word, pos);
         }
     }
 

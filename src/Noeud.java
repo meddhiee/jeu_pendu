@@ -1,5 +1,5 @@
 public class Noeud {
-	 char caractere;
+	 	char caractere;
 	    Noeud filsGauche;
 	    Noeud filsDroit;
 
